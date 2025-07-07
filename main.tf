@@ -59,7 +59,10 @@ module "ec2_workspace" {
   associate_public_ip_address = false
 
   # Bootstrap script
-  user_data_base64 = filebase64("${path.module}/bootstrap_scripts/${var.ec2_workspace.user_data}")
+  user_data_base64 = base64encode(templatefile("${path.module}/bootstrap_scripts/${var.ec2_workspace.user_data}", {
+    ec2_secondary_volume_size = var.ec2_workspace.volume_size
+    mount_point               = var.ec2_workspace.volume_mount_point
+  }))
 
   # IAM role for SSM Session Manager
   create_iam_instance_profile = true

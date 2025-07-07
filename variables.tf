@@ -68,6 +68,7 @@ variable "ec2_workspace" {
     ami_id : string
     user_data : optional(string)
     volume_size : number
+    volume_mount_point : string
     az : string
     additional_tags : optional(map(string))
     spot_enabled : optional(bool)
