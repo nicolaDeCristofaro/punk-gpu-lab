@@ -2,7 +2,7 @@
 
 A robust, private, and secure cloud-based development environment tailored for AI/ML workloads. This workspace uses AWS EC2 with GPU support and AWS Systems Manager for seamless, secure, and credential-free access. Designed for data scientists, ML engineers, and developers who need GPU acceleration and secure remote access from anywhere.
 
-VIDEO DEMO here
+TODO:VIDEO DEMO here possibly
 
 ## Table of Contents
 
@@ -10,6 +10,8 @@ VIDEO DEMO here
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [AI/ML Development Readiness](#aiml-development-readiness)
+- [Storage handling](#storage-handling)
+- [Cleanup, stop and start](#cleanup-stop-and-start)
 
 ## Why this project?
 
@@ -138,6 +140,8 @@ Do you want to perform these actions?
 
 ### 6. Connect to Your EC2 Instance via AWS Toolkit in VS Code
 
+TODO: wait for the EC2 status check to be completed -> 3/3 checks passed > to to do command to loop over
+
 Once your infrastructure is deployed, you can connect to the EC2 instance using the AWS Toolkit extension in VS Code.
 
 #### Step 1: Open AWS Toolkit in VS Code
@@ -147,17 +151,21 @@ Once your infrastructure is deployed, you can connect to the EC2 instance using 
    - You can verify or switch profiles using the **"Select a Connection"** button in the Toolkit panel.
    - If no connection is available, click **"Connect to AWS"** and choose your configured profile.
 
+![AWS_toolkit_connection](./images/aws_toolkit_connection.jpg)
+
 #### Step 2: Connect to the EC2 Instance
 
 1. In the AWS Toolkit panel, expand the **EC2 Instances** section.
 2. Locate the EC2 instance you deployed (you can filter by name or instance ID).
 3. Right-click on the instance and select **"AWS: Connect VS Code to EC2 instance"**.
+
+![AWS_toolkit_vscode_to_instance](./images/aws_toolkit_vscode_to_instance.jpg)
+
 4. VS Code will launch a **new window** connected to the EC2 instance through **AWS Systems Manager Session Manager**.
    - This does **not** require SSH keys or public IP addresses.
    - Traffic is encrypted and routed through Systems Manager for secure and auditable access.
 
-TODO: some screenshots here
-TODO: make a small video/gif about this
+![AWS_toolkit_connected](./images/aws_toolkit_connected.jpg)
 
 > **Note:** You may need to enable "Experimental Features" in the AWS Toolkit extension settings for Session Manager-based connection to EC2.
 
@@ -174,3 +182,74 @@ Given the growing demand for AI/ML development, this project focuses primarily o
 ### Example Use Case: Fine-Tuning a Vision Model ?
 
 TODO: describe and implement a use case OR more use cases
+
+## Storage handling
+
+The example code provided provisions a separate, persistent EBS volume in addition to the EC2 root volume:
+- The root volume is typically ephemeral, especially when using Spot Instances, which can be terminated by AWS at any time. 
+- To prevent data loss, the additional EBS volume is managed independently in Terraform and automatically formatted and mounted at instance startup.
+
+The purpose of handling this second EBS volume separately is to ensure data persistence:
+- If the EC2 instance is terminated (manually or by AWS Spot reclamation), the secondary EBS volume remains intact.
+- When a new EC2 instance is created, the volume is reattached automatically, and the mount point is restored.
+- This ensures you can safely store project files, model checkpoints, datasets, and logs without worrying about losing them when the compute instance is recycled (be careful to save these file under the mount point path).
+
+The mount point for this volume is fully configurable via a Terraform variable:
+
+```hcl
+variable "ec2_workspace" {
+  type = object({
+    ...
+    volume_size          = number
+    volume_mount_point  = string
+    ...
+  })
+}
+```
+
+By default, the volume is mounted at `/mnt/persistent-data`, but you can override this path to suit your project needs. 
+
+The formatting, mounting, and persistence logic (including fstab configuration and permissions for the ubuntu user) are automated via a startup script (user_data), so no manual setup is required post-launch.
+
+## Cleanup, stop and start
+
+### Stop and Start from AWS Toolkit
+
+You can stop and start the EC2 instance directly from the AWS Toolkit in Visual Studio Code:
+1. Open the AWS Toolkit panel.
+2. Locate your EC2 instance.
+3. Choose Stop Instance or Start Instance as needed.
+
+![AWS_toolkit_stop_instance](./images/aws_toolkit_stop_instance.jpg)
+
+![AWS_toolkit_start_instance](./images/aws_toolkit_start_instance.jpg)
+
+⚠️ **Important for Spot Instances**: Stopping Spot instances is not always reliable. AWS may reclaim the instance, and stopped Spot instances may not restart later.
+
+### Complete Cleanup
+
+To destroy all infrastructure created via Terraform:
+
+```bash
+terraform destroy
+```
+
+This will remove all resources described in the code and stored in the terraform state.
+
+### Terminate Only EC2 and Keep EBS Volume
+
+To terminate just the EC2 instance but keep its secondary EBS volume (for data persistence):
+1. Comment out the EC2 module and the aws_volume_attachment resource in your Terraform `main.tf` file.
+2.	Run:
+
+```bash
+terraform plan
+terraform apply
+```
+
+- Terraform will destroy the EC2 instance but retain the EBS volume. Expected output: `Plan: 0 to add, 0 to change, 7 to destroy.`
+
+3. To restore (re-create a new instance + EBS volume attachment):
+  - Uncomment the EC2 and volume attachment resources, then re-run terraform apply.
+  - The new EC2 instance will be created and the existing EBS volume reattached with all previous data intact.
+
