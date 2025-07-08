@@ -5,7 +5,7 @@
 
 A robust, private, and secure cloud-based development environment tailored for AI/ML workloads. This workspace uses AWS EC2 with GPU support and AWS Systems Manager for seamless, secure, and credential-free access. Designed for data scientists, ML engineers, and developers who need GPU acceleration and secure remote access from anywhere.
 
-TODO:VIDEO DEMO here possibly
+![Demo](./images/vscode_to_ec2_demo.gif)
 
 ## Table of Contents
 
