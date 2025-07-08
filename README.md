@@ -87,9 +87,9 @@ git clone https://github.com/nicolaDeCristofaro/private-and-secure-ai-ready-deve
 cd private-and-secure-ai-ready-development-workspace
 ```
 
-### 2. Decide How to Manage Terraform State
+### 2. Decide How to Manage Terraform State backend
 
-By default, Terraform stores its state locally. This is fine for quick tests or development purposes, but it's **not recommended for team environments or production** use.
+By default, Terraform stores its state locally. This is fine for quick tests or development purposes, but it's **not recommended for team environments or production** use. For a deep dive on the different options to handle terraform state backends read [Hashicorp docs](https://developer.hashicorp.com/terraform/language/state/backends). Below are described the local defualt and the remote state on AWS used in this project.
 
 #### Option 1: Local State (default)
 
@@ -141,11 +141,30 @@ Do you want to perform these actions?
   Enter a value: yes
 ```
 
-### 6. Connect to Your EC2 Instance via AWS Toolkit in VS Code
+### 6. Wait for EC2 Status Checks
 
-TODO: wait for the EC2 status check to be completed -> 3/3 checks passed > to to do command to loop over
+After Terraform creates the instance, you must wait for the EC2 instance to pass all 3/3 status checks before connecting.
+You can:
+- Go to the [EC2 Console](https://console.aws.amazon.com/ec2/) and check the instance status manually.
+- Or run the script at `./scripts/wait_for_ec2_status_check.sh` to wait for the instance to be fully ready:
 
-Once your infrastructure is deployed, you can connect to the EC2 instance using the AWS Toolkit extension in VS Code.
+```sh
+# inputs: sh ./scripts/wait_for_ec2_status_check.sh <aws-profile-name> <aws-ec2-instance-id>
+sh ./scripts/wait_for_ec2_status_check.sh workspace-dev i-0d6ca630e5983970b
+```
+
+Expected output:
+
+```sh
+Waiting for instance i-0d6ca630e5983970b to reach 3/3 status checks...
+✅ Instance is ready: all 3/3 checks passed.
+```
+
+This ensures you’re connecting only after the instance is healthy and fully bootstrapped.
+
+### 7. Connect to Your EC2 Instance via AWS Toolkit in VS Code
+
+Once your infrastructure is deployed and the status checks passed, you can connect to the EC2 instance using the AWS Toolkit extension in VS Code.
 
 #### Step 1: Open AWS Toolkit in VS Code
 
