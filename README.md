@@ -1,9 +1,9 @@
-# Private & Secure AI-Ready Cloud Development Workspace
+# Punk GPU Lab - Your Private, GPU-charged Cloud Development Workspace
 
 ![Terraform](https://img.shields.io/badge/terraform-blueviolet)
 ![AWS](https://img.shields.io/badge/AWS-orange)
 
-A robust, private, and secure cloud-based development environment tailored for AI/ML workloads. This workspace uses AWS EC2 with GPU support and AWS Systems Manager for seamless, secure, and credential-free access. Designed for data scientists, ML engineers, and developers who need GPU acceleration and secure remote access from anywhere.
+Spin up a private and secure cloud-based development lab in minutes! Perfect for data scientists, ML engineers, and developers who need GPU-backed workspaces. Jump straight into VS Code as if it were running on your own machine. No public IPs, no SSH keys, no worries, just secure, fully auditable, GPU-charged productivity from anywhere.
 
 ![Demo](./images/vscode_to_ec2_demo.gif)
 
