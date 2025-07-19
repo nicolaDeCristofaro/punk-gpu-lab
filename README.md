@@ -34,7 +34,8 @@ Before you begin, make sure you have the following tools and configurations in p
 ### AWS Account Requirements
 
 - An **AWS Account** with sufficient permissions to create and manage the resources handled in terraform (EC2, VPC, IAM, KMS, S3...).
-- **Service Quotas**: this example uses a Spot EC2 instance with a GPU-enabled type from the G family (e.g., `g4dn.xlarge`). Make sure your account has sufficient EC2 Spot vCPU quota to launch at least one such instance. If you plan to run multiple instances in parallel, ensure the quota covers the total required vCPUs. Note: for new AWS accounts, the default Spot vCPU quota for GPU instances is often **0**, so you may need to request a quota increase via the [Service Quotas Console](https://console.aws.amazon.com/servicequotas/home).
+- **(Only for GPU-enabled instances) Service Quotas**: If you're testing with a GPU-enabled instance (e.g., `g4dn.xlarge`), ensure your AWS account has sufficient EC2 On-Demand or Spot vCPU quota to launch it. For new accounts, this quota is often **0** by default, and you'll need to request an increase via the [Service Quotas Console](https://console.aws.amazon.com/servicequotas/home).  
+  - If you're **just testing the setup** and don't need GPU capabilities, you can use a different AMI (like Ubuntu or Amazon Linux) and a non-GPU instance type. This avoids the need for a quota increase.
 
 ### Local Environment Setup
 
@@ -83,8 +84,8 @@ Follow the steps below to deploy your private and secure AI-ready development en
 ### 1. Clone the Repository
 
 ```sh
-git clone https://github.com/nicolaDeCristofaro/private-and-secure-ai-ready-development-workspace
-cd private-and-secure-ai-ready-development-workspace
+git clone https://github.com/nicolaDeCristofaro/punk-gpu-lab
+cd punk-gpu-lab/
 ```
 
 ### 2. Decide How to Manage Terraform State backend
@@ -93,10 +94,11 @@ By default, Terraform stores its state locally. This is fine for quick tests or 
 
 #### Option 1: Local State (default)
 
-No extra configuration is needed—Terraform will create a `terraform.tfstate` file in your working directory.  
+No extra configuration is needed, Terraform will create a `terraform.tfstate` file in your working directory.
+ 
 **⚠️ Warning**: Local state is not shared, lacks locking, and can be accidentally lost or overwritten.
 
-\*In this repo it is assumed the use of remote backend for storing state, so if you want to use local state, comment or delete the `backend.tf` file.
+\*In this repo it is assumed the use of remote backend for storing state, so if you want to use local state, comment or delete the `backend.tf` file, before launch.
 
 #### Option 2: Remote State with S3 (recommended)
 
