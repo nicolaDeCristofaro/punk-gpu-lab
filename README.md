@@ -3,7 +3,9 @@
 ![Terraform](https://img.shields.io/badge/terraform-blueviolet)
 ![AWS](https://img.shields.io/badge/AWS-orange)
 
-Spin up a private and secure cloud-based development lab in minutes! Perfect for data scientists, ML engineers, and developers who need GPU-backed workspaces. Jump straight into VS Code as if it were running on your own machine. No public IPs, no SSH keys, no worries, just secure, fully auditable, GPU-charged productivity from anywhere.
+Spin up a private and secure cloud-based development lab in minutes! Perfect for data scientists, ML engineers, and developers who need GPU-backed workspaces. Jump straight into VS Code as if it were running on your own machine. No public IPs, no SSH keys, no worries, just secure, fully auditable, GPU-charged environment from anywhere.
+
+> This workspace is ideal not only for AI/ML workloads but also for general-purpose remote development. You can choose to deploy instances with or without GPU support depending on your needs.
 
 ![Demo](./images/vscode_to_ec2_demo.gif)
 
@@ -200,8 +202,6 @@ Once your infrastructure is deployed and the status checks passed, you can conne
 ## AI/ML Development Readiness
 
 Given the growing demand for AI/ML development, this project focuses primarily on supporting development on those workloads. If your use case involves training or fine-tuning machine learning models, this setup can provision GPU-enabled EC2 instances (e.g., `g4dn.xlarge`) to accelerate your workflows.
-
-> This workspace is ideal not only for AI/ML workloads but also for general-purpose remote development. You can choose to deploy instances with or without GPU support depending on your needs.
 
 ### Example Use Case: Fine-Tuning a Vision Model ?
 
