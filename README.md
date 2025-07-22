@@ -207,6 +207,10 @@ Given the growing demand for AI/ML development, this project focuses primarily o
 
 TODO: describe and implement a use case OR more use cases
 
+Candidate popular use cases:
+- fine-tuning, evaluating, and serving large language or diffusion models
+
+
 ## Storage handling
 
 The example code provided provisions a separate, persistent EBS volume in addition to the EC2 root volume:
