@@ -25,12 +25,13 @@ nat_strategy = "single"
 # EC2 Workspaces
 ################################################################################
 ec2_workspace = {
-  scope              = "personal"
-  instance_type      = "g4dn.xlarge"
-  ami_id             = "ami-0caf67d7f3f170d9d" # Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 24.04)
-  volume_size        = 250                     # GB
-  volume_mount_point = "/mnt/persistent-data"  # Mount point for the secondary volume
-  az                 = "eu-central-1a"
+  scope                        = "personal"
+  instance_type                = "g4dn.xlarge"
+  ami_id                       = "ami-0caf67d7f3f170d9d" # Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 24.04)
+  root_volume_size             = 100                     # GB - ephemeral - it is lost when the instance is terminated
+  secondary_volume_size        = 250                     # GB
+  secondary_volume_mount_point = "/mnt/persistent-data"  # Mount point for the secondary volume
+  az                           = "eu-central-1a"
 
   # Spot controls
   spot_enabled = true

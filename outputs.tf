@@ -26,12 +26,12 @@ output "ec2_workspace" {
 }
 
 output "ebs" {
-  description = "Details about the persistent EBS volume"
+  description = "Details about the persistent secondary EBS volume"
   value = {
     volume_id         = aws_ebs_volume.ec2_workspace_data.id
     device_name       = aws_volume_attachment.data_attach.device_name
     attached_instance = aws_volume_attachment.data_attach.instance_id
-    size              = var.ec2_workspace.volume_size
+    size              = var.ec2_workspace.secondary_volume_size
   }
 }
 
