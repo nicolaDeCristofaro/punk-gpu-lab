@@ -47,21 +47,30 @@ module "ec2_workspace" {
   ami           = var.ec2_workspace.ami_id
   instance_type = var.ec2_workspace.instance_type
 
+  root_block_device = {
+    volume_size = var.ec2_workspace.root_volume_size
+  }
+
   # Networking
   subnet_id = module.networking.private_subnets[local.az_index]
   security_group_egress_rules = {
-    internet_outbound = {
-      description = "Allow outbound traffic to internet"
+    internet_outbound_443 = {
+      description = "Allow outbound traffic to internet on port 443"
       cidr_ipv4   = "0.0.0.0/0"
       from_port   = 443
+    }
+    internet_outbound_80 = {
+      description = "Allow outbound traffic to internet on port 80"
+      cidr_ipv4   = "0.0.0.0/0"
+      from_port   = 80
     }
   }
   associate_public_ip_address = false
 
   # Bootstrap script
   user_data_base64 = base64encode(templatefile("${path.module}/bootstrap_scripts/${var.ec2_workspace.user_data}", {
-    ec2_secondary_volume_size = var.ec2_workspace.volume_size
-    mount_point               = var.ec2_workspace.volume_mount_point
+    ec2_secondary_volume_size = var.ec2_workspace.secondary_volume_size
+    mount_point               = var.ec2_workspace.secondary_volume_mount_point
   }))
 
   # IAM role for SSM Session Manager
@@ -87,7 +96,7 @@ module "ec2_workspace" {
 # ---------------------------------------------------------------------------
 resource "aws_ebs_volume" "ec2_workspace_data" {
   availability_zone = var.ec2_workspace.az
-  size              = var.ec2_workspace.volume_size
+  size              = var.ec2_workspace.secondary_volume_size
   type              = "gp3"
 
   encrypted  = true
