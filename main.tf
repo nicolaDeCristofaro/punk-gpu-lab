@@ -48,7 +48,10 @@ module "ec2_workspace" {
   instance_type = var.ec2_workspace.instance_type
 
   root_block_device = {
-    volume_size = var.ec2_workspace.root_volume_size
+    size       = var.ec2_workspace.root_volume_size
+    encrypted  = true
+    kms_key_id = module.kms.key_arn
+    type       = "gp3"
   }
 
   # Networking
