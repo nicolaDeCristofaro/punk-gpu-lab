@@ -133,17 +133,7 @@ If using remote state, make sure you've already configured the backend before ru
 terraform apply
 ```
 
-Terraform will prompt for approval before creating the infrastructure. Expected output:
-
-```sh
-Plan: 33 to add, 0 to change, 0 to destroy.
-
-Do you want to perform these actions?
-  Terraform will perform the actions described above.
-  Only 'yes' will be accepted to approve.
-
-  Enter a value: yes
-```
+Terraform will prompt for approval before creating the infrastructure.
 
 ### 6. Wait for EC2 Status Checks
 

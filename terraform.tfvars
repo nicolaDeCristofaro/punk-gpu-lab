@@ -31,7 +31,7 @@ ec2_workspace = {
   root_volume_size             = 150                     # GB - ephemeral - it is lost when the instance is terminated
   secondary_volume_size        = 150                     # GB
   secondary_volume_mount_point = "/mnt/persistent-data"  # Mount point for the secondary volume
-  az                           = "eu-central-1a"
+  az                           = "eu-central-1b"
 
   # Spot controls
   spot_enabled = true
@@ -40,5 +40,5 @@ ec2_workspace = {
   spot_max_price             = null
   spot_interruption_behavior = "stop" # "terminate" | "hibernate" | "stop"
 
-  user_data = "ai_ml_init.tpl" # Path to the user data script
+  user_data = "general_init.tpl" # Path to the user data script
 }

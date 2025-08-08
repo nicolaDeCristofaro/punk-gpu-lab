@@ -67,6 +67,11 @@ module "ec2_workspace" {
       cidr_ipv4   = "0.0.0.0/0"
       from_port   = 80
     }
+    gradio_outbound_7000 = {
+      description = "Allow outbound traffic to internet on port 7000 for Gradio (if you want to share you app publicly)"
+      cidr_ipv4   = "0.0.0.0/0"
+      from_port   = 7000
+    }
   }
   associate_public_ip_address = false
 
