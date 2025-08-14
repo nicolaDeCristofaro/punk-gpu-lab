@@ -26,7 +26,7 @@ nat_strategy = "single"
 ################################################################################
 ec2_workspace = {
   scope                        = "personal"
-  instance_type                = "g4dn.xlarge"
+  instance_type                = "g6.xlarge"
   ami_id                       = "ami-0caf67d7f3f170d9d" # Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 24.04)
   root_volume_size             = 150                     # GB - ephemeral - it is lost when the instance is terminated
   secondary_volume_size        = 150                     # GB
@@ -34,7 +34,7 @@ ec2_workspace = {
   az                           = "eu-central-1b"
 
   # Spot controls
-  spot_enabled = true
+  spot_enabled = false
   # Set to null to pay up to the current On‑Demand price,
   # or specify a string (e.g., "0.25") to cap the hourly bid.
   spot_max_price             = null

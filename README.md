@@ -191,15 +191,43 @@ Once your infrastructure is deployed and the status checks passed, you can conne
 
 ## AI/ML Development Readiness
 
-Given the growing demand for AI/ML development, this project focuses primarily on supporting development on those workloads. If your use case involves training or fine-tuning machine learning models, this setup can provision GPU-enabled EC2 instances (e.g., `g4dn.xlarge`) to accelerate your workflows.
+Given the growing demand for AI/ML development, this project focuses primarily on supporting development on those workloads. If your use case involves training or fine-tuning machine learning models, this setup can provision GPU-enabled EC2 instances (e.g., `g4dn.xlarge`, `g5.xlarge`, or `g6.xlarge`) to accelerate your workflows.
 
-### Example Use Case: Fine-Tuning a Vision Model ?
+### Example: Serve a 7B chat model with Gradio
 
-TODO: describe and implement a use case OR more use cases
+This sample runs a Python app on a GPU‑backed EC2 instance to serve a lightweight chat UI for the open‑source **HuggingFaceH4/zephyr-7b-beta** model. The app stays **private** (no public IPs, no inbound ports) and is reachable only via **AWS Systems Manager (SSM) port forwarding** or via the **AWS Toolkit** in VS Code.
 
-Candidate popular use cases:
-- fine-tuning, evaluating, and serving large language or diffusion models
+> **Files are already present** on the instance: at bootstrap time, this repository (including `python-samples/small-llm.py`) is git cloned to the EC2 instance. You can open the project directly in VS Code after connecting with the AWS Toolkit.
 
+**What the sample does**
+- Loads `HuggingFaceH4/zephyr-7b-beta` (MIT-licensed, ungated) with **4‑bit NF4** quantization via `BitsAndBytesConfig` (double quantization; FP16 compute).
+- Uses `device_map="auto"` so the model resides on the instance GPU automatically (e.g., **NVIDIA L4** on `g6.xlarge`).
+
+**What the sample does**
+- Loads **`HuggingFaceH4/zephyr-7b-beta`** (MIT‑licensed, ungated) from Hugging Face.
+- Loads the model in **4‑bit NF4** quantization via `BitsAndBytesConfig` (with double quantization and FP16 compute) to fit comfortably on a single GPU.
+- Uses `device_map="auto"` so layers are placed on the GPU automatically (e.g., the **NVIDIA L4** on `g6.xlarge`).
+- Streams tokens to the UI in real time using `TextIteratorStreamer`.
+- Serves a **Gradio** web app.
+
+**Install dependencies**
+
+- Run the `TextIteratorStreamer` which does the following actions:
+...
+
+```bash
+bash x.sh
+```
+
+**Run the app**
+
+```bash
+python python-samples/testV3.py
+```
+#TODO by default on localhost but autoamatically with the extension it can be port-forwarded on local -> screenshot here
+#TODO alternatively if you flag Gradio to share = true you will have a public link shareable with other to showcase what you did
+
+> **Tip:** To persist artifacts (logs, prompts, outputs) across instance recycling, write them under the configured mount point (default: `/mnt/persistent-data`). For more details about how persistent storage is handled or how to change the mount point see the next section [Storage handling](#storage-handling)
 
 ## Storage handling
 
