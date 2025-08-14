@@ -53,4 +53,4 @@ PY
 echo
 echo "[✓] Setup complete."
 echo "Run the demo with:"
-echo "  ${PYBIN} /mnt/persistent-data/small-llm.py"
+echo "  ${PYBIN} /mnt/persistent-data/punk-gpu-lab/python-samples/small-llm.py"
