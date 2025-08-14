@@ -197,35 +197,78 @@ Given the growing demand for AI/ML development, this project focuses primarily o
 
 This sample runs a Python app on a GPU‑backed EC2 instance to serve a lightweight chat UI for the open‑source **HuggingFaceH4/zephyr-7b-beta** model. The app stays **private** (no public IPs, no inbound ports) and is reachable only via **AWS Systems Manager (SSM) port forwarding** or via the **AWS Toolkit** in VS Code.
 
-> **Files are already present** on the instance: at bootstrap time, this repository (including `python-samples/small-llm.py`) is git cloned to the EC2 instance. You can open the project directly in VS Code after connecting with the AWS Toolkit.
-
-**What the sample does**
-- Loads `HuggingFaceH4/zephyr-7b-beta` (MIT-licensed, ungated) with **4‑bit NF4** quantization via `BitsAndBytesConfig` (double quantization; FP16 compute).
-- Uses `device_map="auto"` so the model resides on the instance GPU automatically (e.g., **NVIDIA L4** on `g6.xlarge`).
-
-**What the sample does**
+**What the sample does (python-samples/small-llm.py)**
 - Loads **`HuggingFaceH4/zephyr-7b-beta`** (MIT‑licensed, ungated) from Hugging Face.
 - Loads the model in **4‑bit NF4** quantization via `BitsAndBytesConfig` (with double quantization and FP16 compute) to fit comfortably on a single GPU.
 - Uses `device_map="auto"` so layers are placed on the GPU automatically (e.g., the **NVIDIA L4** on `g6.xlarge`).
 - Streams tokens to the UI in real time using `TextIteratorStreamer`.
 - Serves a **Gradio** web app.
 
-**Install dependencies**
-
-- Run the `TextIteratorStreamer` which does the following actions:
-...
+**Clone the repo on the remote machine**
 
 ```bash
-bash x.sh
+cd /mnt/persistent-data/
+git clone https://github.com/nicolaDeCristofaro/punk-gpu-lab
+cd punk-gpu-lab
 ```
+
+**Install dependencies**
+
+```bash
+bash ./scripts/gpu_usecase_dependencies_install_uv.sh
+```
+
+Hers's an overview of what the script does:
+
+- Set strict bash defaults (`set -euo pipefail`) to fail fast on errors.
+- Use these environment variables (override as needed):
+  - `ENV_DIR` — venv path (default `~/.venvs/gradio-venv`)
+  - `PY_VER` — Python version (default `3.11`)
+  - `TORCH_INDEX_URL` — PyTorch wheel index (default CUDA 12.1 wheels)
+- Ensure the **uv** tool is installed and added to your `PATH`. 
+
+> **uv** is a modern, fast Python package and environment manager; it’s used here instead of pip/venv for speed. If you prefer Conda instead of uv, there is an alternative script `gpu_usecase_dependencies_install_conda.sh` that performs similar setup steps using Conda.
+
+- Install the requested Python with `uv python install`.
+- Create a fresh virtual environment at `$ENV_DIR`.
+- Generate a minimal `requirements.txt` (`gradio`, `transformers`, `accelerate`, `bitsandbytes`).
+- Install **PyTorch** from `$TORCH_INDEX_URL`, then install the rest via `uv pip`.
+- Run a smoke test printing Torch version and CUDA availability.
 
 **Run the app**
 
 ```bash
-python python-samples/testV3.py
+/home/ubuntu/.venvs/gradio-venv/bin/python /mnt/persistent-data/punk-gpu-lab/python-samples/small-llm.py
 ```
-#TODO by default on localhost but autoamatically with the extension it can be port-forwarded on local -> screenshot here
-#TODO alternatively if you flag Gradio to share = true you will have a public link shareable with other to showcase what you did
+
+- By default the app is reachable locally and since you’re already connected with AWS Toolkit and have port forwarding set up, you don’t need to do anything else, the Toolkit forwards the port automatically.
+Just open: http://localhost:7860 or click the button on the banner that appears.
+
+![Gradio_local](./images/gradio_local.png)
+
+- Alternatively, you can set `share=True` and Gradio will print an ephemeral public https://*.gradio.live URL that anyone can open. This is quick for demos, but be careful exposing sensitive data (you can also add basic auth for simple authentication).
+
+![Gradio_public](./images/gradio_public.png)
+
+**What you’ll see**
+
+Here’s how the app looks in the browser:
+
+![Gradio_app](./images/gradio_app.png)
+
+**Monitor GPU usage**
+
+From another terminal **on the instance** while the app is running:
+
+```bash
+# update view every second
+watch -n 1 nvidia-smi
+
+# or one-shot snapshot
+nvidia-smi
+```
+
+![Gradio_app_usage](./images/gradio_app_usage.png)
 
 > **Tip:** To persist artifacts (logs, prompts, outputs) across instance recycling, write them under the configured mount point (default: `/mnt/persistent-data`). For more details about how persistent storage is handled or how to change the mount point see the next section [Storage handling](#storage-handling)
 
